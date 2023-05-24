@@ -23,10 +23,10 @@ void button_event_handler(twr_button_t *self, twr_button_event_t event, void *ev
     // Check event source
     if (event == TWR_BUTTON_EVENT_CLICK)
     {
-        // Toggle LED pin state
-        twr_led_set_mode(&led, TWR_LED_MODE_TOGGLE);
+        // Pulse LED pin state
+        twr_led_pulse(&led, 10000);
 
-         // Publish message on radio
+        // Publish message on radio
         button_click_count++;
         twr_radio_pub_push_button(&button_click_count);
     }
@@ -63,22 +63,10 @@ void application_init(void)
     // Initialize thermometer on core module
     twr_tmp112_init(&tmp112, TWR_I2C_I2C0, 0x49);
     twr_tmp112_set_event_handler(&tmp112, tmp112_event_handler, NULL);
-    twr_tmp112_set_update_interval(&tmp112, 10000);
+    twr_tmp112_set_update_interval(&tmp112, 30000);
 
     // Initialize radio
     twr_radio_init(TWR_RADIO_MODE_NODE_SLEEPING);
     // Send radio pairing request
-    twr_radio_pairing_request("skeleton", FW_VERSION);
-}
-
-// Application task function (optional) which is called peridically if scheduled
-void application_task(void)
-{
-    static int counter = 0;
-
-    // Log task run and increment counter
-    twr_log_debug("APP: Task run (count: %d)", ++counter);
-
-    // Plan next run of this task in 1000 ms
-    twr_scheduler_plan_current_from_now(1000);
+    twr_radio_pairing_request("prevention", FW_VERSION);
 }
